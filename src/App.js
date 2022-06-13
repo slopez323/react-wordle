@@ -1,6 +1,15 @@
 import React from "react";
 import "./App.css";
 
+const guessList = [
+  ["", "", "", "", ""],
+  ["", "", "", "", ""],
+  ["", "", "", "", ""],
+  ["", "", "", "", ""],
+  ["", "", "", "", ""],
+  ["", "", "", "", ""],
+];
+
 const changeCurrentBox = (keypress) => {
   const first = document.getElementById("input-0");
   if (!first.textContent) {
@@ -42,17 +51,26 @@ const addListeners = () => {
 };
 
 const Board = () => {
-  const inputs = [];
-  for (let i = 0; i < 30; i++) {
-    inputs.push(
-      <span
-        className={`inputs word-${Math.ceil((i + 1) / 5)}`}
-        id={`input-${i}`}
-        key={i}
-      ></span>
-    );
-  }
-  return <div className="Board">{inputs}</div>;
+  return (
+    <div className="Board">
+      {guessList.map((word, wordindex) => {
+        return (
+          <div className="board-row">
+            {word.map((letter, letterindex) => {
+              return (
+                <span
+                  className={`inputs word-${wordindex + 1}`}
+                  id={`input-${wordindex + 1}-${letterindex + 1}`}
+                >
+                  {letter}
+                </span>
+              );
+            })}
+          </div>
+        );
+      })}
+    </div>
+  );
 };
 
 const KeySpans = (props) => {
@@ -60,7 +78,6 @@ const KeySpans = (props) => {
     <span
       className="keys"
       id={props.id}
-      key={props.key}
       onClick={() => {
         //// input key type function here
       }}
@@ -77,18 +94,18 @@ const Keyboard = () => {
   return (
     <div className="Keyboard">
       <div className="key-rows keys1">
-        {keys1.map((key, index) => {
-          return <KeySpans id={key} key={index} />;
+        {keys1.map((key) => {
+          return <KeySpans id={key} />;
         })}
       </div>
       <div className="key-rows keys2">
-        {keys2.map((key, index) => {
-          return <KeySpans id={key} key={index} />;
+        {keys2.map((key) => {
+          return <KeySpans id={key} />;
         })}
       </div>
       <div className="key-rows keys3">
-        {keys3.map((key, index) => {
-          return <KeySpans id={key} key={index} />;
+        {keys3.map((key) => {
+          return <KeySpans id={key} />;
         })}
       </div>
     </div>
