@@ -13,8 +13,26 @@ const guessList = [
   ["", "", "", "", ""],
 ];
 
-const Error = () => {
-  return <div className="error"></div>;
+const wonMessages = {
+  1: "Genius",
+  2: "Magnificent",
+  3: "Impressive",
+  4: "Splendid",
+  5: "Great",
+  6: "Phew",
+};
+
+const Header = () => {
+  return (
+    <header>
+      <h1>Wordle</h1>
+      <span>Clone</span>
+    </header>
+  );
+};
+
+const Message = () => {
+  return <div className="message">Message</div>;
 };
 
 function App() {
@@ -37,14 +55,43 @@ function App() {
     }
   };
 
+  const handleMessage = (type) => {
+    const message = document.querySelector(".message");
+    if (type === "lost") {
+      message.textContent = wordleAnswer.toUpperCase();
+      message.classList.add("show");
+    } else if (type === "won") {
+      message.textContent = wonMessages[guessWord];
+      message.classList.add("show");
+      setTimeout(() => {
+        message.classList.remove("show");
+      }, 2000);
+    } else {
+      const row = document.querySelector(
+        `.board-row:nth-child(${guessWord + 1})`
+      );
+      if (type === "missing") {
+        message.textContent = "Not enough letters";
+      } else if (type === "not-word") {
+        message.textContent = "Not in word list";
+      }
+      message.classList.add("show");
+      row.classList.add("shake");
+      setTimeout(() => {
+        message.classList.remove("show");
+        row.classList.remove("shake");
+      }, 600);
+    }
+  };
+
   const handleEnter = () => {
     const guess = guesses[guessWord].join("");
     if (guess.length < 5) {
-      //alert missing letters
+      handleMessage("missing");
       return;
     }
     if (!answerList.includes(guess) && !wordList.includes(guess)) {
-      //alert not in word list
+      handleMessage("not-word");
       return;
     }
     checkGuess(guess.toLowerCase());
@@ -53,7 +100,7 @@ function App() {
   React.useEffect(
     function changeBoxColor() {
       if (guessWord > 0) {
-        const guess = guesses[guessWord - 1];
+        const guess = [...guesses[guessWord - 1]];
         const guessBoxes = [
           ...document.querySelectorAll(
             `.board-row:nth-child(${guessWord}) .inputs`
@@ -121,23 +168,24 @@ function App() {
 
   React.useEffect(
     function handleInput() {
+      const guessesCopy = JSON.parse(JSON.stringify(guesses));
       if (gameState === "playing") {
         if (keypress.key === "Backspace" || keypress.key === "←") {
-          if (guesses[guessWord][guessLetter]) {
-            guesses[guessWord].splice(guessLetter, 1, "");
-            setGuesses([...guesses]);
+          if (guessesCopy[guessWord][guessLetter]) {
+            guessesCopy[guessWord].splice(guessLetter, 1, "");
+            setGuesses([...guessesCopy]);
           } else {
             if (guessLetter > 0) {
-              guesses[guessWord].splice(guessLetter - 1, 1, "");
-              setGuesses([...guesses]);
+              guessesCopy[guessWord].splice(guessLetter - 1, 1, "");
+              setGuesses([...guessesCopy]);
               setGuessLetter(guessLetter - 1);
             }
           }
         } else if (keypress.key === "Enter") {
           handleEnter();
         } else if (keypress.key !== "") {
-          guesses[guessWord].splice(guessLetter, 1, keypress.key);
-          setGuesses([...guesses]);
+          guessesCopy[guessWord].splice(guessLetter, 1, keypress.key);
+          setGuesses([...guessesCopy]);
           if (guessLetter < 4) {
             setGuessLetter(guessLetter + 1);
           }
@@ -175,7 +223,11 @@ function App() {
     function result() {
       if (gameState !== "playing") {
         setTimeout(() => {
-          alert(gameState);
+          if (gameState === "won") {
+            handleMessage("won");
+          } else {
+            handleMessage("lost");
+          }
         }, 300);
       }
     },
@@ -184,7 +236,8 @@ function App() {
 
   return (
     <div className="App">
-      <Error />
+      <Header />
+      <Message />
       <Board guesses={guesses} />
       <Keyboard keypress={keypress} setKeypress={setKeypress} />
     </div>
