@@ -31,26 +31,8 @@
   justify-content: center;
 }
 
-.inputs.filled{
+.filled{
   border: 2px solid darkgray;
-}
-
-.inputs.green{
-  background-color: #6baa64;
-    border-color: #6baa64;
-    color: white;
-}
-
-.inputs.yellow{
-  background-color: #c8b458;
-    border-color: #c8b458;
-    color: white;
-}
-
-.inputs.gray{
-  background-color: #787c7e;
-    border-color: #787c7e;
-    color: white;
 }
 
 .Keyboard{
@@ -80,4 +62,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+
+.gray{
+  background-color: #787c7e;
+    border-color: #787c7e;
+    color: white;
+}
+
+.yellow{
+  background-color: #c8b458;
+    border-color: #c8b458;
+    color: white;
+}
+
+.green{
+  background-color: #6baa64;
+    border-color: #6baa64;
+    color: white;
 }
