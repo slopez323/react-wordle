@@ -21,7 +21,7 @@
 }
 
 .inputs{
-  border: 1px solid darkgrey;
+  border: 1px solid lightgray;
   font-size: 32px;
   font-weight: bold;
   text-transform: uppercase;
@@ -29,6 +29,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.inputs.filled{
+  border: 2px solid darkgray;
+}
+
+.inputs.green{
+  background-color: #6baa64;
+    border-color: #6baa64;
+    color: white;
+}
+
+.inputs.yellow{
+  background-color: #c8b458;
+    border-color: #c8b458;
+    color: white;
+}
+
+.inputs.gray{
+  background-color: #787c7e;
+    border-color: #787c7e;
+    color: white;
 }
 
 .Keyboard{
