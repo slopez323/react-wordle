@@ -1,17 +1,7 @@
-const Popup = ({
-  gameState,
-  guessWord,
-  showPopup,
-  setShowPopup,
-  stats,
-  startNewGame,
-}) => {
-  const popupVisible = () => {
-    return showPopup ? "show" : "";
-  };
+const Popup = ({ gameState, guessWord, setShowPopup, stats, startNewGame }) => {
   return (
     <div
-      className={`popup-container ${popupVisible()}`}
+      className={`popup-container `}
       onClick={() => {
         setShowPopup(false);
       }}

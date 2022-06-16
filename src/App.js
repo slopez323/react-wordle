@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Header from "./Header";
 import Board from "./Board";
 import Keyboard from "./Keyboard";
 import { answerList, wordList } from "./wordleWords";
@@ -26,6 +27,7 @@ const defaultBoxColors = [
 const data = JSON.parse(localStorage.getItem("localData"))
   ? JSON.parse(localStorage.getItem("localData"))
   : {
+      darkTheme: false,
       currentWordIndex: 0,
       guesses: JSON.parse(JSON.stringify(guessList)),
       guessWord: 0,
@@ -58,15 +60,6 @@ const wonMessages = {
   6: "Phew",
 };
 
-const Header = () => {
-  return (
-    <header>
-      <h1>Wordle</h1>
-      <span>Clone</span>
-    </header>
-  );
-};
-
 const Message = ({ message }) => {
   const showMessage = () => {
     return message.isVisible ? "show" : "";
@@ -75,6 +68,7 @@ const Message = ({ message }) => {
 };
 
 function App() {
+  const [darkTheme, setDarkTheme] = useState(data.darkTheme);
   const [guesses, setGuesses] = useState(
     JSON.parse(JSON.stringify(data.guesses))
   );
@@ -100,20 +94,6 @@ function App() {
   const [rowError, setRowError] = useState({ row: "", error: false });
   const [showPopup, setShowPopup] = useState(false);
   const [stats, setStats] = useState(JSON.parse(JSON.stringify(data.stats)));
-
-  React.useEffect(function updateLocalStorage() {
-    const localData = {
-      currentWordIndex,
-      guesses,
-      guessWord,
-      guessLetter,
-      gameState,
-      boxColors,
-      letterColors,
-      stats,
-    };
-    localStorage.setItem("localData", JSON.stringify(localData));
-  });
 
   const checkGuess = (guess) => {
     setGuessWord(guessWord + 1);
@@ -184,11 +164,43 @@ function App() {
     });
   };
 
-  React.useEffect(() => {
-    setWordleAnswer(answerList[currentWordIndex]);
-  }, [currentWordIndex]);
+  useEffect(function updateLocalStorage() {
+    const localData = {
+      darkTheme,
+      currentWordIndex,
+      guesses,
+      guessWord,
+      guessLetter,
+      gameState,
+      boxColors,
+      letterColors,
+      stats,
+    };
+    localStorage.setItem("localData", JSON.stringify(localData));
+  });
 
-  React.useEffect(
+  useEffect(function typingListener() {
+    window.addEventListener("keydown", (e) => {
+      if (
+        e.key === "Backspace" ||
+        e.key === "Enter" ||
+        (e.which >= 65 && e.which <= 90)
+      ) {
+        const keyData = { key: e.key, count: keypress.count + 1 };
+        setKeypress(keyData);
+      }
+    });
+    return () => window.removeEventListener("keydown");
+  }, []);
+
+  useEffect(
+    function updateWordleAnswer() {
+      setWordleAnswer(answerList[currentWordIndex]);
+    },
+    [currentWordIndex]
+  );
+
+  useEffect(
     function changeBoxColor() {
       if (guessWord > 0) {
         const guess = [...guesses[guessWord - 1]];
@@ -243,20 +255,7 @@ function App() {
     [guessWord]
   );
 
-  React.useEffect(function typingListener() {
-    window.addEventListener("keydown", (e) => {
-      if (
-        e.key === "Backspace" ||
-        e.key === "Enter" ||
-        (e.which >= 65 && e.which <= 90)
-      ) {
-        const keyData = { key: e.key, count: keypress.count + 1 };
-        setKeypress(keyData);
-      }
-    });
-  }, []);
-
-  React.useEffect(
+  useEffect(
     function handleInput() {
       const guessesCopy = JSON.parse(JSON.stringify(guesses));
       if (gameState === "playing") {
@@ -285,7 +284,7 @@ function App() {
     [keypress]
   );
 
-  React.useEffect(
+  useEffect(
     function handleEndGameData() {
       if (gameState !== "playing") {
         window.endMessage = setTimeout(() => {
@@ -335,7 +334,7 @@ function App() {
     [gameState]
   );
 
-  React.useEffect(
+  useEffect(
     function clearMessage() {
       if (message.type === "missing" || message.type === "not-word") {
         window.errorOut = setTimeout(() => {
@@ -354,7 +353,7 @@ function App() {
     [message]
   );
 
-  React.useEffect(
+  useEffect(
     function removeShake() {
       const rowShake = setTimeout(() => {
         setRowError({ ...rowError, error: false });
@@ -365,16 +364,17 @@ function App() {
   );
 
   return (
-    <div className="App">
-      <Popup
-        gameState={gameState}
-        guessWord={guessWord}
-        showPopup={showPopup}
-        setShowPopup={setShowPopup}
-        stats={stats}
-        startNewGame={startNewGame}
-      />
-      <Header />
+    <div className="App" data-darkTheme={darkTheme}>
+      {showPopup && (
+        <Popup
+          gameState={gameState}
+          guessWord={guessWord}
+          setShowPopup={setShowPopup}
+          stats={stats}
+          startNewGame={startNewGame}
+        />
+      )}
+      <Header darkTheme={darkTheme} setDarkTheme={setDarkTheme} />
       <Message message={message} />
       <Board guesses={guesses} boxColors={boxColors} rowError={rowError} />
       <Keyboard

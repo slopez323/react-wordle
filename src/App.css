@@ -6,9 +6,24 @@
   font-style: normal;
 }
 
+:root{
+  --background: white;
+  --text: black;
+  --borders: lightgray;
+  --gray: #787c7e;
+}
+
+[data-darkTheme=true]{
+  --background: black;
+  --text: white;
+  --borders: grey;
+  --gray: #434548;
+}
+
 .App {
   width: 100vw;
   height: 100vh;
+  background-color: var(--background);
 
   display: flex;
   flex-direction: column;
@@ -18,8 +33,14 @@
 
 header{
   width: 100%;
-  border-bottom: 1px solid lightgray;
+  border-bottom: 1px solid var(--borders);
+  color: var(--text);
 
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+
+header div{
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,9 +61,67 @@ header span{
   padding-top: 10px;
 }
 
+.switch-container{
+padding-right: 20px;
+
+}
+
+.switch-container span{
+  padding: 0;
+  color: rgb(154, 154, 154);
+}
+
+.switch{
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 21px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 15px;
+  width: 15px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #6baa64;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #6baa64;
+}
+
+input:checked + .slider:before {
+  transform: translateX(10px);
+}
+
 .Board{
   display: grid;
-  /* grid-template-columns: repeat(5, 55px); */
   grid-template-rows: repeat(6, 60px);
   gap: 5px;
 }
@@ -54,7 +133,8 @@ header span{
 }
 
 .inputs{
-  border: 1px solid lightgray;
+  border: 1px solid var(--borders);
+  color: var(--text);
   font-size: 32px;
   font-weight: bold;
   text-transform: uppercase;
@@ -84,7 +164,8 @@ header span{
 }
 
 .keys{
-  background-color: lightgrey;
+  background-color: var(--borders);
+  color: var(--text);
   text-transform: uppercase;
   font-weight: bold;
   font-size: 13px;
@@ -124,10 +205,6 @@ header span{
   background-color: rgba(255, 255, 255, 0.527);
   z-index: 1;
 
-  display: none;
-}
-
-.popup-container.show{
   display: flex;
 }
 
@@ -227,8 +304,8 @@ gap: 5px;
 
 
 .gray{
-  background-color: #787c7e;
-    border-color: #787c7e;
+  background-color: var(--gray);
+    border-color: var(--gray);
     color: white;
 }
 
