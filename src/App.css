@@ -98,25 +98,6 @@ header span{
   justify-content: center;
 }
 
-
-.gray{
-  background-color: #787c7e;
-    border-color: #787c7e;
-    color: white;
-}
-
-.yellow{
-  background-color: #c8b458;
-    border-color: #c8b458;
-    color: white;
-}
-
-.green{
-  background-color: #6baa64;
-    border-color: #6baa64;
-    color: white;
-}
-
 .message{
   background-color: black;
   color: white;
@@ -128,7 +109,7 @@ header span{
   transition: opacity .2s ease-out;
 }
 
-.show{
+.message.show{
   opacity: 100;
 }
 
@@ -142,6 +123,12 @@ header span{
   height: 100vh;
   background-color: rgba(255, 255, 255, 0.527);
   z-index: 1;
+
+  display: none;
+}
+
+.popup-container.show{
+  display: flex;
 }
 
 .popup{
@@ -153,8 +140,8 @@ header span{
   border-radius: 5px;
   width: 500px;
   max-width: 90vw;
-  height: 500px;
-  max-height: 90vh;
+  height: max-content;
+  padding: 10px 20px 30px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
   display: flex;
@@ -163,8 +150,29 @@ header span{
   justify-content: center;
 }
 
+#close{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
 .popup h3{
+  margin: 20px 0 10px;
   text-transform: uppercase;
+}
+
+button{
+  border: none;
+  padding: 20px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover{
+  box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
 }
 
 .statSummary{
@@ -188,6 +196,52 @@ header span{
 
 .statLabel{
   font-size: 12px;
+}
+
+.distribution{
+  width: 70%;
+  font-size: 14px;
+
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+gap: 5px;
+}
+
+.chart{
+  display: grid;
+  grid-template-columns: 20px 1fr;
+}
+
+.chart span{
+  padding: 2px 5px;
+}
+
+.bar{
+  min-width: 10px;
+  background-color: #787c7e;
+  color: white;
+  text-align: right;
+  font-weight: bold;
+}
+
+
+.gray{
+  background-color: #787c7e;
+    border-color: #787c7e;
+    color: white;
+}
+
+.yellow{
+  background-color: #c8b458;
+    border-color: #c8b458;
+    color: white;
+}
+
+.green{
+  background-color: #6baa64;
+    border-color: #6baa64;
+    color: white;
 }
 
 @keyframes shake {

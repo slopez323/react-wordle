@@ -1,86 +1,125 @@
-// update when localstorage is set up
-const stats = [
-  { value: 4, title: "Played" },
-  { value: 100, title: "Win %" },
-  { value: 1, title: "Current Streak" },
-  { value: 1, title: "Max Streak" },
-];
-
-const distribution = [
-  { guessCount: 1, value: 1 },
-  { guessCount: 2, value: 0 },
-  { guessCount: 3, value: 0 },
-  { guessCount: 4, value: 3 },
-  { guessCount: 5, value: 0 },
-  { guessCount: 6, value: 0 },
-];
-
-const Popup = () => {
+const Popup = ({
+  gameState,
+  guessWord,
+  showPopup,
+  setShowPopup,
+  stats,
+  startNewGame,
+}) => {
+  const popupVisible = () => {
+    return showPopup ? "show" : "";
+  };
   return (
-    <div className="popup-container">
-      <Stats />
+    <div
+      className={`popup-container ${popupVisible()}`}
+      onClick={() => {
+        setShowPopup(false);
+      }}
+    >
+      <Stats
+        gameState={gameState}
+        guessWord={guessWord}
+        setShowPopup={setShowPopup}
+        stats={stats}
+        startNewGame={startNewGame}
+      />
     </div>
   );
 };
 
-const Stats = () => {
+const Stats = ({ gameState, guessWord, setShowPopup, stats, startNewGame }) => {
+  const { winDistribution, ...rest } = stats;
   return (
     <div className="popup">
+      <div
+        id="close"
+        onClick={() => {
+          setShowPopup(false);
+        }}
+      >
+        X
+      </div>
       <h3>Statistics</h3>
-      <StatSummary />
+      <StatSummary stats={rest} />
       <h3>Guess Distribution</h3>
-      <GuessDistribution />
+      <GuessDistribution
+        gameState={gameState}
+        guessWord={guessWord}
+        distribution={winDistribution}
+      />
+      <NextWord startNewGame={startNewGame} />
     </div>
   );
 };
 
-const StatSummary = () => {
+const StatSummary = ({ stats }) => {
+  const summary = {
+    Played: stats.gamesPlayed,
+    "Win %": Math.round((stats.gamesWon / stats.gamesPlayed) * 100),
+    "Current Streak": stats.currentStreak,
+    "Max Streak": stats.maxStreak,
+  };
   return (
     <div className="statSummary">
-      {stats.map((stat) => {
-        return <StatBox stat={stat} key={stat.title} />;
+      {Object.keys(summary).map((statTitle) => {
+        return (
+          <StatBox statTitle={statTitle} summary={summary} key={statTitle} />
+        );
       })}
     </div>
   );
 };
 
-const StatBox = ({ stat }) => {
+const StatBox = ({ statTitle, summary }) => {
   return (
     <div className="statBox">
-      <div className="statValue">{stat.value}</div>
-      <div className="statLabel">{stat.title}</div>
+      <div className="statValue">{summary[statTitle]}</div>
+      <div className="statLabel">{statTitle}</div>
     </div>
   );
 };
 
-const GuessDistribution = () => {
-  const computeDistribution = (() => {
-    const distributionCopy = JSON.parse(JSON.stringify(distribution));
-    distributionCopy.sort((item1, item2) => item2.value - item1.value);
-    console.log(distributionCopy);
-    console.log(distribution);
-    // distribution.forEach((number) => {
-    //   const weight =
-    //     number.value / stats.find((stat) => stat.title === "Played").value;
-    //   number.weight = weight;
-    // });
-  })();
-
+const GuessDistribution = ({ gameState, guessWord, distribution }) => {
   return (
     <div className="distribution">
       {distribution.map((count, index) => {
-        return <DistChart count={count} key={index} />;
+        return (
+          <DistChart
+            gameState={gameState}
+            guessWord={guessWord}
+            count={count}
+            key={index}
+          />
+        );
       })}
     </div>
   );
 };
 
-const DistChart = ({ count }) => {
+const DistChart = ({ gameState, guessWord, count }) => {
+  const barColor =
+    (gameState === "won" || gameState === "saved-won") &&
+    count.guessCount === guessWord
+      ? "green"
+      : "";
+  const width = `${count.weight * 100}%`;
   return (
-    <div className="chart">
+    <div className="chart" style={{ width: width }}>
       <span>{count.guessCount}</span>
-      <span>{count.value}</span>
+      <span className={`bar ${barColor}`}>{count.value}</span>
     </div>
+  );
+};
+
+const NextWord = ({ startNewGame }) => {
+  return (
+    <button
+      onClick={() => {
+        startNewGame();
+      }}
+    >
+      Next Wordle
+    </button>
   );
 };
 

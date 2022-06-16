@@ -23,6 +23,32 @@ const defaultBoxColors = [
   ["", "", "", "", ""],
 ];
 
+const data = JSON.parse(localStorage.getItem("localData"))
+  ? JSON.parse(localStorage.getItem("localData"))
+  : {
+      currentWordIndex: 0,
+      guesses: JSON.parse(JSON.stringify(guessList)),
+      guessWord: 0,
+      guessLetter: 0,
+      gameState: "playing",
+      boxColors: JSON.parse(JSON.stringify(defaultBoxColors)),
+      letterColors: {},
+      stats: {
+        gamesPlayed: 0,
+        gamesWon: 0,
+        currentStreak: 0,
+        maxStreak: 0,
+        winDistribution: [
+          { guessCount: 1, value: 0, weight: 0 },
+          { guessCount: 2, value: 0, weight: 0 },
+          { guessCount: 3, value: 0, weight: 0 },
+          { guessCount: 4, value: 0, weight: 0 },
+          { guessCount: 5, value: 0, weight: 0 },
+          { guessCount: 6, value: 0, weight: 0 },
+        ],
+      },
+    };
+
 const wonMessages = {
   1: "Genius",
   2: "Magnificent",
@@ -49,21 +75,45 @@ const Message = ({ message }) => {
 };
 
 function App() {
-  const [guesses, setGuesses] = useState([...guessList]);
-  const [guessWord, setGuessWord] = useState(0);
-  const [guessLetter, setGuessLetter] = useState(0);
+  const [guesses, setGuesses] = useState(
+    JSON.parse(JSON.stringify(data.guesses))
+  );
+  const [guessWord, setGuessWord] = useState(data.guessWord);
+  const [guessLetter, setGuessLetter] = useState(data.guessLetter);
   const [keypress, setKeypress] = useState({ key: "", count: 0 });
-  const [gameState, setGameState] = useState("playing");
-  const pickWordleAnswer = (index) => answerList[index];
-  const [wordleAnswer, setWordleAnswer] = useState(pickWordleAnswer(0));
-  const [boxColors, setBoxColors] = useState([...defaultBoxColors]);
-  const [letterColors, setLetterColors] = useState({});
+  const [gameState, setGameState] = useState(data.gameState);
+  const [currentWordIndex, setCurrentWordIndex] = useState(
+    data.currentWordIndex
+  );
+  const [wordleAnswer, setWordleAnswer] = useState(
+    answerList[currentWordIndex]
+  );
+  const [boxColors, setBoxColors] = useState(
+    JSON.parse(JSON.stringify(data.boxColors))
+  );
+  const [letterColors, setLetterColors] = useState(data.letterColors);
   const [message, setMessage] = useState({
     message: "",
     type: "",
     isVisible: false,
   });
   const [rowError, setRowError] = useState({ row: "", error: false });
+  const [showPopup, setShowPopup] = useState(false);
+  const [stats, setStats] = useState(JSON.parse(JSON.stringify(data.stats)));
+
+  React.useEffect(function updateLocalStorage() {
+    const localData = {
+      currentWordIndex,
+      guesses,
+      guessWord,
+      guessLetter,
+      gameState,
+      boxColors,
+      letterColors,
+      stats,
+    };
+    localStorage.setItem("localData", JSON.stringify(localData));
+  });
 
   const checkGuess = (guess) => {
     setGuessWord(guessWord + 1);
@@ -88,7 +138,7 @@ function App() {
         type: type,
         isVisible: true,
       });
-    } else {
+    } else if (gameState === "playing") {
       if (type === "missing") {
         setMessage({
           message: "Not enough letters",
@@ -118,6 +168,20 @@ function App() {
     }
     checkGuess(guess.toLowerCase());
   };
+
+  const startNewGame = () => {
+    setCurrentWordIndex(currentWordIndex + 1);
+    setGuesses(JSON.parse(JSON.stringify(guessList)));
+    setGuessWord(0);
+    setGuessLetter(0);
+    setGameState("playing");
+    setBoxColors(JSON.parse(JSON.stringify(defaultBoxColors)));
+    setLetterColors({});
+  };
+
+  React.useEffect(() => {
+    setWordleAnswer(answerList[currentWordIndex]);
+  }, [currentWordIndex]);
 
   React.useEffect(
     function changeBoxColor() {
@@ -217,16 +281,51 @@ function App() {
   );
 
   React.useEffect(
-    function result() {
+    function handleEndGameData() {
       if (gameState !== "playing") {
-        setTimeout(() => {
-          if (gameState === "won") {
-            handleMessage("won");
-          } else {
-            handleMessage("lost");
-          }
+        window.endMessage = setTimeout(() => {
+          handleMessage(gameState);
         }, 300);
+
+        if (gameState === "won" || gameState === "lost") {
+          const statsCopy = JSON.parse(JSON.stringify(stats));
+          if (gameState === "won") {
+            statsCopy.winDistribution[guessWord - 1].value += 1;
+            const distributionCopy = JSON.parse(
+              JSON.stringify(statsCopy.winDistribution)
+            );
+            distributionCopy.sort((item1, item2) => item2.value - item1.value);
+            const max = distributionCopy[0].value;
+            statsCopy.winDistribution.forEach((item) => {
+              const weight = item.value / max;
+              item.weight = weight;
+            });
+
+            statsCopy.maxStreak =
+              statsCopy.maxStreak > statsCopy.currentStreak + 1
+                ? statsCopy.maxStreak
+                : statsCopy.currentStreak + 1;
+
+            statsCopy.currentStreak += 1;
+            statsCopy.gamesWon += 1;
+            setGameState("saved-won");
+          } else if (gameState === "lost") {
+            statsCopy.currentStreak = 0;
+            setGameState("saved-lost");
+          }
+          statsCopy.gamesPlayed += 1;
+          setStats({ ...statsCopy });
+        }
+
+        window.popupVisible = setTimeout(() => {
+          setShowPopup(true);
+        }, 1000);
       }
+
+      return () => {
+        clearTimeout(window.endMessage);
+        clearTimeout(window.popupVisible);
+      };
     },
     [gameState]
   );
@@ -262,7 +361,14 @@ function App() {
 
   return (
     <div className="App">
-      {/* <Popup /> */}
+      <Popup
+        gameState={gameState}
+        guessWord={guessWord}
+        showPopup={showPopup}
+        setShowPopup={setShowPopup}
+        stats={stats}
+        startNewGame={startNewGame}
+      />
       <Header />
       <Message message={message} />
       <Board guesses={guesses} boxColors={boxColors} rowError={rowError} />
