@@ -1,7 +1,10 @@
-const KeySpans = ({ id, keypress, setKeypress }) => {
+const KeySpans = ({ id, keypress, setKeypress, letterColors }) => {
+  const getLetterColors = () => {
+    return letterColors[id.toUpperCase()] ? letterColors[id.toUpperCase()] : "";
+  };
   return (
     <span
-      className="keys"
+      className={`keys ${getLetterColors()}`}
       id={id}
       onClick={() => {
         setKeypress({ key: id, count: keypress.count + 1 });
@@ -12,7 +15,7 @@ const KeySpans = ({ id, keypress, setKeypress }) => {
   );
 };
 
-const KeyRows = ({ row, keypress, setKeypress }) => {
+const KeyRows = ({ row, keypress, setKeypress, letterColors }) => {
   return (
     <div className="key-rows">
       {row.map((key, index) => {
@@ -22,6 +25,7 @@ const KeyRows = ({ row, keypress, setKeypress }) => {
             key={index}
             keypress={keypress}
             setKeypress={setKeypress}
+            letterColors={letterColors}
           />
         );
       })}
@@ -29,7 +33,7 @@ const KeyRows = ({ row, keypress, setKeypress }) => {
   );
 };
 
-const Keyboard = ({ keypress, setKeypress }) => {
+const Keyboard = ({ keypress, setKeypress, letterColors }) => {
   const keys1 = ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"];
   const keys2 = ["a", "s", "d", "f", "g", "h", "j", "k", "l"];
   const keys3 = ["Enter", "z", "x", "c", "v", "b", "n", "m", "←"];
@@ -43,6 +47,7 @@ const Keyboard = ({ keypress, setKeypress }) => {
             key={index}
             keypress={keypress}
             setKeypress={setKeypress}
+            letterColors={letterColors}
           />
         );
       })}

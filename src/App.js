@@ -3,8 +3,18 @@ import Board from "./Board";
 import Keyboard from "./Keyboard";
 import { answerList, wordList } from "./wordleWords";
 import "./App.css";
+import Popup from "./Popup";
 
 const guessList = [
+  ["", "", "", "", ""],
+  ["", "", "", "", ""],
+  ["", "", "", "", ""],
+  ["", "", "", "", ""],
+  ["", "", "", "", ""],
+  ["", "", "", "", ""],
+];
+
+const defaultBoxColors = [
   ["", "", "", "", ""],
   ["", "", "", "", ""],
   ["", "", "", "", ""],
@@ -31,8 +41,11 @@ const Header = () => {
   );
 };
 
-const Message = () => {
-  return <div className="message">Message</div>;
+const Message = ({ message }) => {
+  const showMessage = () => {
+    return message.isVisible ? "show" : "";
+  };
+  return <div className={`message ${showMessage()}`}>{message.message}</div>;
 };
 
 function App() {
@@ -43,7 +56,14 @@ function App() {
   const [gameState, setGameState] = useState("playing");
   const pickWordleAnswer = (index) => answerList[index];
   const [wordleAnswer, setWordleAnswer] = useState(pickWordleAnswer(0));
+  const [boxColors, setBoxColors] = useState([...defaultBoxColors]);
   const [letterColors, setLetterColors] = useState({});
+  const [message, setMessage] = useState({
+    message: "",
+    type: "",
+    isVisible: false,
+  });
+  const [rowError, setRowError] = useState({ row: "", error: false });
 
   const checkGuess = (guess) => {
     setGuessWord(guessWord + 1);
@@ -56,31 +76,33 @@ function App() {
   };
 
   const handleMessage = (type) => {
-    const message = document.querySelector(".message");
     if (type === "lost") {
-      message.textContent = wordleAnswer.toUpperCase();
-      message.classList.add("show");
+      setMessage({
+        message: wordleAnswer.toUpperCase(),
+        type: type,
+        isVisible: true,
+      });
     } else if (type === "won") {
-      message.textContent = wonMessages[guessWord];
-      message.classList.add("show");
-      setTimeout(() => {
-        message.classList.remove("show");
-      }, 2000);
+      setMessage({
+        message: wonMessages[guessWord],
+        type: type,
+        isVisible: true,
+      });
     } else {
-      const row = document.querySelector(
-        `.board-row:nth-child(${guessWord + 1})`
-      );
       if (type === "missing") {
-        message.textContent = "Not enough letters";
+        setMessage({
+          message: "Not enough letters",
+          type: type,
+          isVisible: true,
+        });
       } else if (type === "not-word") {
-        message.textContent = "Not in word list";
+        setMessage({
+          message: "Not in word list",
+          type: type,
+          isVisible: true,
+        });
       }
-      message.classList.add("show");
-      row.classList.add("shake");
-      setTimeout(() => {
-        message.classList.remove("show");
-        row.classList.remove("shake");
-      }, 600);
+      setRowError({ row: guessWord, error: true });
     }
   };
 
@@ -101,11 +123,7 @@ function App() {
     function changeBoxColor() {
       if (guessWord > 0) {
         const guess = [...guesses[guessWord - 1]];
-        const guessBoxes = [
-          ...document.querySelectorAll(
-            `.board-row:nth-child(${guessWord}) .inputs`
-          ),
-        ];
+        const guessColors = JSON.parse(JSON.stringify(boxColors));
         const letterSet = new Set(guess);
         const colorsCopy = { ...letterColors };
         letterSet.forEach((letter) => {
@@ -128,7 +146,8 @@ function App() {
               if (wordIndices.includes(index)) {
                 const letter = guess[index];
                 colorsCopy[letter] = "green";
-                guessBoxes[index].classList.add("green");
+                guessColors[guessWord - 1][index] = "green";
+                setBoxColors([...guessColors]);
                 instances++;
                 return false;
               }
@@ -139,12 +158,14 @@ function App() {
               while (instances < wordIndices.length) {
                 if (colorsCopy[letter] !== "green")
                   colorsCopy[letter] = "yellow";
-                guessBoxes[index].classList.add("yellow");
+                guessColors[guessWord - 1][index] = "yellow";
+                setBoxColors([...guessColors]);
                 instances++;
                 return;
               }
               if (!colorsCopy[letter]) colorsCopy[letter] = "gray";
-              guessBoxes[index].classList.add("gray");
+              guessColors[guessWord - 1][index] = "gray";
+              setBoxColors([...guessColors]);
             });
           setLetterColors({ ...colorsCopy });
         });
@@ -196,30 +217,6 @@ function App() {
   );
 
   React.useEffect(
-    function borderFilled() {
-      [...document.querySelectorAll(".inputs")].forEach((input) => {
-        if (input.textContent !== "") {
-          input.classList.add("filled");
-        } else input.classList.remove("filled");
-      });
-    },
-    [guesses]
-  );
-
-  React.useEffect(
-    function keyboardColor() {
-      if (letterColors !== {}) {
-        for (const letter in letterColors) {
-          document
-            .getElementById(letter.toLowerCase())
-            .classList.add(letterColors[letter]);
-        }
-      }
-    },
-    [letterColors]
-  );
-
-  React.useEffect(
     function result() {
       if (gameState !== "playing") {
         setTimeout(() => {
@@ -234,12 +231,46 @@ function App() {
     [gameState]
   );
 
+  React.useEffect(
+    function clearMessage() {
+      if (message.type === "missing" || message.type === "not-word") {
+        window.errorOut = setTimeout(() => {
+          setMessage({ ...message, isVisible: false });
+        }, 600);
+      } else if (message.type === "won") {
+        window.wonOut = setTimeout(() => {
+          setMessage({ ...message, isVisible: false });
+        }, 2000);
+      }
+      return () => {
+        clearTimeout(window.errorOut);
+        clearTimeout(window.wonOut);
+      };
+    },
+    [message]
+  );
+
+  React.useEffect(
+    function removeShake() {
+      const rowShake = setTimeout(() => {
+        setRowError({ ...rowError, error: false });
+      }, 600);
+      return () => clearTimeout(rowShake);
+    },
+    [rowError]
+  );
+
   return (
     <div className="App">
+      {/* <Popup /> */}
       <Header />
-      <Message />
-      <Board guesses={guesses} />
-      <Keyboard keypress={keypress} setKeypress={setKeypress} />
+      <Message message={message} />
+      <Board guesses={guesses} boxColors={boxColors} rowError={rowError} />
+      <Keyboard
+        keypress={keypress}
+        setKeypress={setKeypress}
+        letterColors={letterColors}
+      />
     </div>
   );
 }
