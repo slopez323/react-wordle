@@ -98,10 +98,7 @@ const GuessDistribution = ({ gameState, guessWord, distribution }) => {
 
 const DistChart = ({ gameState, guessWord, count }) => {
   const barColor =
-    (gameState === "won" || gameState === "saved-won") &&
-    count.guessCount === guessWord
-      ? "green"
-      : "";
+    gameState.includes("won") && count.guessCount === guessWord ? "green" : "";
   const width = `${count.weight * 100}%`;
   return (
     <div className="chart" style={{ width: width }}>

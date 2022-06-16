@@ -126,13 +126,13 @@ function App() {
   };
 
   const handleMessage = (type) => {
-    if (type === "lost") {
+    if (type.includes("lost")) {
       setMessage({
         message: wordleAnswer.toUpperCase(),
         type: type,
         isVisible: true,
       });
-    } else if (type === "won") {
+    } else if (type.includes("won")) {
       setMessage({
         message: wonMessages[guessWord],
         type: type,
@@ -177,6 +177,11 @@ function App() {
     setGameState("playing");
     setBoxColors(JSON.parse(JSON.stringify(defaultBoxColors)));
     setLetterColors({});
+    setMessage({
+      message: "",
+      type: "",
+      isVisible: false,
+    });
   };
 
   React.useEffect(() => {
@@ -336,7 +341,7 @@ function App() {
         window.errorOut = setTimeout(() => {
           setMessage({ ...message, isVisible: false });
         }, 600);
-      } else if (message.type === "won") {
+      } else if (message.type.includes("won")) {
         window.wonOut = setTimeout(() => {
           setMessage({ ...message, isVisible: false });
         }, 2000);
