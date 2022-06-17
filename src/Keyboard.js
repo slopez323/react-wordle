@@ -1,10 +1,10 @@
 const KeySpans = ({ id, keypress, setKeypress, letterColors }) => {
-  const getLetterColors = () => {
-    return letterColors[id.toUpperCase()] ? letterColors[id.toUpperCase()] : "";
-  };
+  const getLetterColors = letterColors[id.toUpperCase()]
+    ? letterColors[id.toUpperCase()]
+    : "";
   return (
     <span
-      className={`keys ${getLetterColors()}`}
+      className={`keys ${getLetterColors}`}
       id={id}
       onClick={() => {
         setKeypress({ key: id, count: keypress.count + 1 });

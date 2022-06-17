@@ -364,7 +364,7 @@ function App() {
   );
 
   return (
-    <div className="App" data-darkTheme={darkTheme}>
+    <div className="App" data-darktheme={darkTheme}>
       {showPopup && (
         <Popup
           gameState={gameState}

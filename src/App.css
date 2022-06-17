@@ -13,7 +13,7 @@
   --gray: #787c7e;
 }
 
-[data-darkTheme=true]{
+[data-darktheme=true]{
   --background: black;
   --text: white;
   --borders: grey;
@@ -35,9 +35,10 @@ header{
   width: 100%;
   border-bottom: 1px solid var(--borders);
   color: var(--text);
+  position: relative;
 
-  display: grid;
-  grid-template-columns: 1fr auto;
+  display: flex;
+  justify-content: center;
 }
 
 header div{
@@ -62,8 +63,9 @@ header span{
 }
 
 .switch-container{
-padding-right: 20px;
-
+  position: absolute;
+  right: 10px;
+  top: 15px;
 }
 
 .switch-container span{
@@ -138,6 +140,7 @@ input:checked + .slider:before {
   font-size: 32px;
   font-weight: bold;
   text-transform: uppercase;
+  /* transition: transform 1s; */
 
   display: flex;
   align-items: center;
@@ -183,6 +186,7 @@ input:checked + .slider:before {
   background-color: var(--text);
   color: var(--background);
   padding: 15px;
+  margin: 10px;
   min-height: 20px;
   border-radius: 3px;
   font-weight: bold;
@@ -302,7 +306,52 @@ gap: 5px;
   text-align: right;
   font-weight: bold;
 }
+/* 
+.inputs:nth-child(1){
+  transition-property: background-color;
+  transition-delay: .5s;
+}
 
+.inputs:nth-child(2){
+  transition-property: background-color;
+  transition-delay: 1s;
+}
+
+.inputs:nth-child(3){
+  transition-property: background-color;
+  transition-delay: 1.5s;
+}
+.inputs:nth-child(4){
+  transition-property: background-color;
+  transition-delay: 2s;
+}
+.inputs:nth-child(5){
+  transition-property: background-color;
+  transition-delay: 2.5s;
+}
+
+.inputs:nth-child(1).colored{
+  animation: flip .5s;
+}
+
+.inputs:nth-child(2).colored{
+  animation: flip .5s ease-in-out 1s;
+}
+
+
+.inputs:nth-child(3).colored{
+  animation: flip .5s ease-in-out 1.5s;
+}
+
+
+.inputs:nth-child(4).colored{
+  animation: flip .5s ease-in-out 2s;
+}
+
+
+.inputs:nth-child(5).colored{
+  animation: flip .5s ease-in-out 2.5s;
+} */
 
 .gray{
   background-color: var(--gray);
@@ -321,6 +370,15 @@ gap: 5px;
     border-color: #6baa64;
     color: white;
 }
+
+/* 
+@keyframes flip {
+  0% {transform: rotateX(30deg);}
+  25%{transform: rotateX(60deg);}
+  50%{transform: rotateX(90deg);}
+  75%{transform: rotateX(60deg);}
+  100%{transform: rotateX(30deg);}
+} */
 
 @keyframes shake {
   0% {transform: translate(0, 0);}

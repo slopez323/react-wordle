@@ -1,9 +1,8 @@
 const BoardRows = ({ word, wordindex, boxColors, rowError }) => {
-  const isError = () => {
-    return rowError.row === wordindex && rowError.error === true ? "shake" : "";
-  };
+  const isError =
+    rowError.row === wordindex && rowError.error === true ? "shake" : "";
   return (
-    <div className={`board-row ${isError()}`}>
+    <div className={`board-row ${isError}`}>
       {word.map((letter, index) => {
         return (
           <BoardLetters
@@ -20,17 +19,14 @@ const BoardRows = ({ word, wordindex, boxColors, rowError }) => {
 };
 
 const BoardLetters = ({ letter, letterindex, wordindex, boxColors }) => {
-  const isFilled = () => {
-    return letter !== "" ? "filled" : "";
-  };
+  const isFilled = letter !== "" ? "filled" : "";
 
-  const highlightBox = () => {
-    return boxColors[wordindex][letterindex];
-  };
+  const colorBox =
+    boxColors[wordindex][letterindex] !== ""
+      ? `colored ${boxColors[wordindex][letterindex]}`
+      : "";
 
-  return (
-    <span className={`inputs ${highlightBox()} ${isFilled()}`}>{letter}</span>
-  );
+  return <span className={`inputs ${colorBox} ${isFilled}`}>{letter}</span>;
 };
 
 const Board = ({ guesses, boxColors, rowError }) => {
