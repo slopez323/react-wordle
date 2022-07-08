@@ -398,4 +398,11 @@ gap: 5px;
   .keys{
     padding: 15px 10px;
   }
+  .message{
+    position: absolute;
+    top: 50px;
+  }
+  header{
+    margin-bottom: 20px;
+  }
 }
