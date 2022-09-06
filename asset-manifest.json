@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/react-wordle/static/css/main.51de4a73.css",
-    "main.js": "/react-wordle/static/js/main.869db90a.js",
-    "static/js/787.15824f2c.chunk.js": "/react-wordle/static/js/787.15824f2c.chunk.js",
-    "static/media/karnakpro-condensedblack-webfont.woff": "/react-wordle/static/media/karnakpro-condensedblack-webfont.48d610efa16976a4b153.woff",
-    "index.html": "/react-wordle/index.html",
-    "main.51de4a73.css.map": "/react-wordle/static/css/main.51de4a73.css.map",
-    "main.869db90a.js.map": "/react-wordle/static/js/main.869db90a.js.map",
-    "787.15824f2c.chunk.js.map": "/react-wordle/static/js/787.15824f2c.chunk.js.map"
+    "main.css": "/static/css/main.13b6eb34.css",
+    "main.js": "/static/js/main.2c2a5b78.js",
+    "static/js/787.15824f2c.chunk.js": "/static/js/787.15824f2c.chunk.js",
+    "static/media/karnakpro-condensedblack-webfont.woff": "/static/media/karnakpro-condensedblack-webfont.48d610efa16976a4b153.woff",
+    "index.html": "/index.html",
+    "main.13b6eb34.css.map": "/static/css/main.13b6eb34.css.map",
+    "main.2c2a5b78.js.map": "/static/js/main.2c2a5b78.js.map",
+    "787.15824f2c.chunk.js.map": "/static/js/787.15824f2c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.51de4a73.css",
-    "static/js/main.869db90a.js"
+    "static/css/main.13b6eb34.css",
+    "static/js/main.2c2a5b78.js"
   ]
 }
